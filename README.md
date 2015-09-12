@@ -35,7 +35,7 @@ This is `baron`!
 
 2.  Setup your basic routes in `routes.php`.   An example router file looks like:
 
-    ```
+    ```php
     <?php
 
     $routes = [
