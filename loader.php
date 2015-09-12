@@ -24,8 +24,8 @@ foreach ($CORE_DEFINITIONS as $define) {
 spl_autoload_register(function($class_name) {
     $parts = explode('_', $class_name);
     $path = '/'. implode('/', $parts) . '.php';
-    if (file_exists(CORE_ROOT.$path)) {
-        require CORE_ROOT.$path;
+    if (file_exists(CORE_ROOT.'/phplib/'.$path)) {
+        require CORE_ROOT.'/phplib/'.$path;
     } else {
         require PHP_ROOT.$path;
     }
