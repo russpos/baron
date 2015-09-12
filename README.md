@@ -48,8 +48,10 @@ This is `baron`!
     ];
     ```
 
- Setup your application in `router.php`.  You can look at the sample file in this repo, but generally
-it looks something like this:
+3. Setup your application in `router.php`. This just tells `baron` the things
+it needs to know, loads your routes, and loads your routes and loads `baron`.
+You can then just start the `Router` to kick off the application.  You can look
+at the sample file in this repo, but generally it looks something like this:
 
     ```php
     <?php
@@ -65,8 +67,6 @@ it looks something like this:
 
     Router::route($routes);
     ```
-
-This just tells `baron` the things it needs to know, loads your routes, and loads your routes and loads `baron`.  You can then just start the `Router` to kick off the application.
 
 4.  For development purposes, you can use PHP's built-in server:
 
