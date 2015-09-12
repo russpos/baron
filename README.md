@@ -61,7 +61,7 @@ define('CORE_ROOT', APP_ROOT.'/Core');
 define('CONFIG_PATH', APP_ROOT.'/configuration.php');
 
 require APP_ROOT.'/routes.php';
-require CORE_ROOT.'/Loader.php';
+require CORE_ROOT.'/loader.php';
 
 Router::route($routes);
 ```
