@@ -8,14 +8,20 @@
  *  www/
  *    router.php
  *    // Your static assets
- *  phplib
+ *  somefolder/
  *    // Your PHP files
- *  Core
+ *  someotherfolder/
  *    // Git-submodule to this project
  */
 
-require dirname(__FILE__).'/sample.config.php';
+// 1. Require your config file
+require dirname(__FILE__).'../sample.config.php';
+
+// 2. Require the loader.
 require CORE_ROOT.'/loader.php';
 
+// 3. Pass routes into the Router to kick off the app
+// Routes can either be in another file, or defined right here in router.
+// Doesn't really make much of a difference
 require APP_ROOT.'/routes.php';
 Router::route($routes);
