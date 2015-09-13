@@ -21,7 +21,7 @@ This is `baron`!
 1. Create a new directory for your web app.  A basic structure looks like:
 
     ```
-    $ (~/my_app) tree
+    (~/my_app) $ tree
     .
     ├── Core -> ../Core        // Symlink (or perhaps a git-submodule) to this repo
     ├── configuration.php      // PHP file containing "config data"
@@ -35,7 +35,7 @@ This is `baron`!
 
 2.  Setup your basic routes in `routes.php`.   An example router file looks like:
 
-    ```
+    ```php
     <?php
 
     $routes = [
@@ -71,7 +71,7 @@ at the sample file in this repo, but generally it looks something like this:
 4.  For development purposes, you can use PHP's built-in server:
 
     ```
-    $ (~/my_app/www) php -S localhost:8000 ./router.php
+    (~/my_app/www) $ php -S localhost:8000 ./router.php
     ```
 
 5. This app was not really written for production purposes, so use at your own risk. For production purposes
