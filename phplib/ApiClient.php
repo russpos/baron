@@ -10,6 +10,13 @@ abstract class ApiClient {
     const RETURN_JSON = "JSON";
     const RETURN_URL  = "URL";
 
+    private static $http_methods = [
+        self::HTTP_GET,
+        self::HTTP_PATCH,
+        self::HTTP_POST,
+        self::HTTP_PUT,
+    ];
+
     abstract static protected function getHost();
     abstract static protected function getApiPrefix();
     abstract static protected function getDefaultReturnType();
@@ -28,9 +35,19 @@ abstract class ApiClient {
         return static::generateUrl(static::getApiPrefix() . $path, $qs);
     }
 
-    // TODO -- see if we can replace post, patch, get, put, and getraw with this
-    // Totally untested method
-    private function __handleRequestFunction($verb, $is_raw, $url_path, $data) {
+    public function __call($method, $args) {
+        $method = strtoupper($method);
+        if (in_array($method, self::$http_methods)) {
+            return $this->__handleRequestFunction($verb, $args);
+        }
+        $class_name = get_class($this);
+        $msg = "$class_name has no method '$method'";
+        throw new BadMethodCallException($msg);
+    }
+
+    private function __handleRequestFunction($verb, $args) {
+        $is_raw = false;
+        list($url_path, $data) = $args;
         $verb = strtoupper($verb);
         if ($verb == static::HTTP_GET) {
             $url_data = $data;
@@ -50,56 +67,6 @@ abstract class ApiClient {
             $verb,
             $url,
             $body_data,
-            static::getDefaultReturnType()
-        );
-    }
-
-    public function get($url, $data=[]) {
-        $data = array_merge($data, $this->getAccessData());
-        return $this->makeRequest(
-            static::HTTP_GET,
-            static::generateApiUrl($url, $data),
-            [],
-            static::getDefaultReturnType()
-        );
-    }
-
-    public function getRaw($url, $data=[]) {
-        $data = array_merge($data, $this->getAccessData());
-        return $this->makeRequest(
-            static::HTTP_GET,
-            static::generateUrl($url, $data),
-            [],
-            static::getDefaultReturnType()
-        );
-    }
-
-    public function post($url, $data=[]) {
-        $access = $this->getAccessData();
-        return $this->makeRequest(
-            static::HTTP_POST,
-            static::generateApiUrl($url, $access),
-            $data,
-            static::getDefaultReturnType()
-        );
-    }
-
-    public function put($url, $data=[]) {
-        $access = $this->getAccessData();
-        return $this->makeRequest(
-            static::HTTP_PUT,
-            static::generateApiUrl($url, $access),
-            $data,
-            static::getDefaultReturnType()
-        );
-    }
-
-    public function patch($url, $data=[]) {
-        $access = $this->getAccessData();
-        return $this->makeRequest(
-            static::HTTP_PATCH,
-            static::generateApiUrl($url, $access),
-            $data,
             static::getDefaultReturnType()
         );
     }
@@ -172,4 +139,3 @@ abstract class ApiClient {
     }
 
 }
-
