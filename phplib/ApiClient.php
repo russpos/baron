@@ -17,6 +17,8 @@ abstract class ApiClient {
         self::HTTP_PUT,
     ];
 
+    private $should_throw = false;
+
     abstract static protected function getHost();
     abstract static protected function getApiPrefix();
     abstract static protected function getDefaultReturnType();
@@ -71,6 +73,10 @@ abstract class ApiClient {
         );
     }
 
+    public function throwExceptionsOnBadRequest() {
+        $this->should_throw = true;
+    }
+
     protected function makeRequest($http_verb, $url, $data=[], $returnType=self::RETURN_JSON) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -117,11 +123,15 @@ abstract class ApiClient {
         }
 
         // Throw an exception on a bad request
-        if ($header_array['code'] >= 400) {
+        if ($this->should_throw && $header_array['code'] >= 400) {
             throw new Errors_BadResponse($response_data, $header_array, $url);
         }
 
-        return $response_data;
+        return new ApiClient_Response(
+            $header_array['code'],
+            $response_data,
+            $header_array
+        );
     }
 
     private static function parseHeaders($headers) {
@@ -137,5 +147,4 @@ abstract class ApiClient {
         $header_array['code'] = (int) $m[0];
         return $header_array;
     }
-
 }
