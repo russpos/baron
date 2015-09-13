@@ -5,9 +5,9 @@ class Config {
     protected static $data;
 
     protected static function getData() {
+        global $CONFIG;
         if (!isset(self::$data)) {
-            require CONFIG_PATH;
-            self::$data = $config;
+            self::$data = $CONFIG;
         }
         return self::$data;
     }

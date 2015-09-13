@@ -1,6 +1,6 @@
 <?php
 
-class Expception_Undefined extends Exception {
+class Exception_Undefined extends Exception {
     public function __construct($define_name) {
         $this->name = $define_name;
         parent::__construct("Constant {$this->name} must be defined in your router file!");
@@ -12,7 +12,6 @@ $CORE_DEFINITIONS = [
     'APP_ROOT',
     'PHP_ROOT',
     'CORE_ROOT',
-    'CONFIG_PATH',
 ];
 
 foreach ($CORE_DEFINITIONS as $define) {
