@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Colors
+ *
+ * A class for outputing colored strings to the console.
+ */
 class Colors {
 
     const BLACK = '0;30';
@@ -19,25 +24,62 @@ class Colors {
     const LIGHT_GRAY   = '0;37';
     const WHITE        = '1;37';
 
-    const RESET = "\033[0m";
+    const RESET_CODE = "\033[0m";
 
+    /**
+     * @var Color|null $instance
+     */
     private static $instance = null;
 
+    // private __construct() {{{ 
+    /**
+     * __construct
+     * Private constructor. This is a no-op and only exists so that we
+     * can ensure singleton.
+     * @access private
+     */
     private function __construct() {
-        // Noop, this is only defined so that we can make it private
     }
+    // }}}
 
+    // public getInstance() {{{
+    /**
+     * getInstance
+     * Returns (or creates and returns) the single instance of Color
+     * @static
+     * @access public
+     * @return Color
+     */
     public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
     }
+    // }}}
 
+    // public __call(color,args) {{{ 
+    /**
+     * __call
+     * Helper function to allow for calling methods on the color
+     * instance based off of the names of the color constants.
+     *
+     * For example:
+     *
+     * ```php
+     * $color->green("String", $thing);
+     * ```
+     *
+     * @param string $color Name of the color method to wrap the provided strings
+     * @param array $args Collection of strings to be printed
+     * @access public
+     * @return string
+     */
     public function __call($color, $args) {
         $string = implode(' ', $args);
         $color_code = constant('self::'. strtoupper($color));
-        $reset = self::RESET;
+        $reset = self::RESET_CODE;
         return "\033[{$color_code}m{$string}{$reset}";
     }
+    // }}}
 }
