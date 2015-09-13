@@ -17,7 +17,7 @@ abstract class ApiClient {
     abstract protected function getAccessData();
 
     protected static function generateUrl($path, $qs=[]) {
-        $url = "https://" . self::getHost() . $path;
+        $url = "https://" . static::getHost() . $path;
         if (!empty($qs)) {
             $url .= '?' . http_build_query($qs);
         }
@@ -25,14 +25,14 @@ abstract class ApiClient {
     }
 
     protected static function generateApiUrl($path, $qs=[]) {
-        return self::generateUrl(self::getApiPrefix() . $path, $qs);
+        return static::generateUrl(static::getApiPrefix() . $path, $qs);
     }
 
     // TODO -- see if we can replace post, patch, get, put, and getraw with this
     // Totally untested method
     private function __handleRequestFunction($verb, $is_raw, $url_path, $data) {
         $verb = strtoupper($verb);
-        if ($verb == self::HTTP_GET) {
+        if ($verb == static::HTTP_GET) {
             $url_data = $data;
             $body_data = [];
         } else {
@@ -42,65 +42,65 @@ abstract class ApiClient {
 
         $url_data = array_merge($url_data, $this->getAccessData());
         $url = ($is_raw) ?
-            self::generateUrl($url_path, $url_data) :
-            self::generateApiUrl($url_path, $url_data)
+            static::generateUrl($url_path, $url_data) :
+            static::generateApiUrl($url_path, $url_data)
         ;
 
         return $this->makeRequest(
             $verb,
             $url,
             $body_data,
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
     public function get($url, $data=[]) {
         $data = array_merge($data, $this->getAccessData());
         return $this->makeRequest(
-            self::HTTP_GET,
-            self::generateApiUrl($url, $data),
+            static::HTTP_GET,
+            static::generateApiUrl($url, $data),
             [],
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
     public function getRaw($url, $data=[]) {
         $data = array_merge($data, $this->getAccessData());
         return $this->makeRequest(
-            self::HTTP_GET,
-            self::generateUrl($url, $data),
+            static::HTTP_GET,
+            static::generateUrl($url, $data),
             [],
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
     public function post($url, $data=[]) {
         $access = $this->getAccessData();
         return $this->makeRequest(
-            self::HTTP_POST,
-            self::generateApiUrl($url, $access),
+            static::HTTP_POST,
+            static::generateApiUrl($url, $access),
             $data,
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
     public function put($url, $data=[]) {
         $access = $this->getAccessData();
         return $this->makeRequest(
-            self::HTTP_PUT,
-            self::generateApiUrl($url, $access),
+            static::HTTP_PUT,
+            static::generateApiUrl($url, $access),
             $data,
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
     public function patch($url, $data=[]) {
         $access = $this->getAccessData();
         return $this->makeRequest(
-            self::HTTP_PATCH,
-            self::generateApiUrl($url, $access),
+            static::HTTP_PATCH,
+            static::generateApiUrl($url, $access),
             $data,
-            self::getDefaultReturnType()
+            static::getDefaultReturnType()
         );
     }
 
@@ -110,13 +110,17 @@ abstract class ApiClient {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
 
-        if ($http_verb == self::HTTP_PATCH) {
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Baron ApiClient 0.0.1');
+
+        Logger::debug("Attempting to $http_verb $url");
+
+        if ($http_verb == static::HTTP_PATCH) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        } else if ($http_verb == self::HTTP_PUT) {
+        } else if ($http_verb == static::HTTP_PUT) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         }
 
-        if ($http_verb == self::HTTP_POST || $http_verb == self::HTTP_PATCH || $http_verb == self::HTTP_PUT) {
+        if ($http_verb == static::HTTP_POST || $http_verb == static::HTTP_PATCH || $http_verb == static::HTTP_PUT) {
             $data_string = (is_string($data)) ? $data : json_encode($data);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -131,12 +135,12 @@ abstract class ApiClient {
         $header_size  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers      = substr($response, 0, $header_size);
         $body         = substr($response, $header_size);
-        $header_array = self::parseHeaders($headers);
+        $header_array = static::parseHeaders($headers);
         Logger::info("Request status: {$header_array['Status']} ({$header_array['code']})");
 
-        if ($returnType === self::RETURN_URL) {
+        if ($returnType === static::RETURN_URL) {
             parse_str($body, $response_data);
-        } else if ($returnType === self::RETURN_JSON) {
+        } else if ($returnType === static::RETURN_JSON) {
             $response_data = json_decode($body, true);
             if ($response_data == false) {
                 Logger::warn("Error parsing response: $body");
